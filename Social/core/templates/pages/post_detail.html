@@ -1,0 +1,100 @@
+{% extends 'layouts/layout.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Karma {% endblock %}
+{% block content %}
+
+
+<div class="container">
+
+    <div class="row mt-5">
+        <div class="col-md-5 col-sm-6">
+            <a href="{% url 'Home' %}" class="btn btn-light">Back To Home</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-5 col-sm-12 border-bottom">
+            <p>
+                <strong>{{post.author}} </strong>{{post.created_at}}
+
+                {% if request.user == post.author %}
+                    <a href="{% url 'post-edit' post.pk %}" style="color: #333;"><i class="far fa-edit">Edit</i></a>
+                    <a href="{% url 'post-delete' post.pk %}" style="color: #333;"><i class="fas fa-trash">Delete</i></a>
+                {% endif%}
+    
+            </p>
+            <h5>{{ post.title }}</h5>
+            <p>{{ post.content }}</p>
+
+            {% if post.picture %}
+                <img src="{{ post.picture.url }}"  width="350" height="350" />
+            {% endif %}
+            <div class=" py-2 d-flex flex-row">
+                <form action="{% url 'like' post.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-up"><span>{{ post.likes.all.count }}</span></i>
+                    </button>
+                </form>
+                <form action="{% url 'dislike' post.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-down"><span>{{ post.dislikes.all.count }}</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center mt-3 mb-5">
+        <div class="col-md-5 col-sm-12">
+            <form method="POST">
+                {% csrf_token%}
+                {{ form|crispy }}
+                <div class="d-grid gap-2">
+                    <button  class="btn btn-block btn-success mt-3">Submit!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    {% for comment in comments %}
+    <div class="row justify-content-center mt-3 mb-5">
+        <div class="col-md-5 col-sm-12 border-bottom">
+            <p><strong>{{ comment.author }}</strong>{{ comment.created_at }}
+                {% if request.user == comment.author %}
+                    <a href="{% url 'comment-edit' comment.pk %}" style="color: #333;"><i class="far fa-edit">edit</i></a>
+                    <a href="{% url 'comment-delete' comment.pk %}" style="color: #333;"><i class="fas fa-trash">delete</i></a>
+                {% endif%}
+            </p>
+            <p>{{ comment.content }}</p>
+
+            <div class=" py-2 d-flex flex-row">
+                <form action="{% url 'comment-like' comment.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-up"><span>{{ comment.c_likes.all.count }}</span></i>
+                    </button>
+                </form>
+                <form action="{% url 'comment-dislike' comment.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-down"><span>{{ comment.c_dislikes.all.count }}</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'layouts/layout.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10 col-sm-12 text-center">
+            {% if request.user.profile.name %}
+            <h1 class="display-2">Welcome Back {{request.user.profile.name}}</h1>
+            {% else %}
+            <h1 class="display-2">Welcome Back {{request.user.username}}</h1>
+            {% endif %}
+        </div>
+    </div>  
+    {% if request.user.profile.name %}
+    {% else %}
+    <div class="row mt-3">
+        <div class="col-md-5 col-sm-12">
+            <h5><a href="{% url 'create-profile' request.user.pk %}">Create a Profile!</a></h5>
+            <p>To se more options...</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-5 col-sm-12 border-bottom">
+            {% if request.user.profile.name %}
+                <h5><a href="{% url 'add-post' request.user.profile.pk %}">Add a Post!</a></h5>
+            {% else %}
+                <h5><a href="{% url 'add-post' request.user.pk %}">Add a Post!</a></h5>
+            {% endif %}
+        </div>
+    </div>
+
+    {% for post in post_list %} 
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-5 col-sm-12 border-bottom position-relative">
+            {% if post.author.profile.picture %}
+            <img src="{{ post.author.profile.picture.url }}" class="rounded-circle" width="60" height="60" />
+            {% endif %}
+            {% if request.user.profile%}
+            <p><a style="text-decoration: none" class="text-primary" href="{% url 'profile' post.author.profile.pk %}">
+                @{{post.author.profile.name}}</a> {{post.created_at}}</p>
+            {% endif %}
+        
+            <div class="position-relative">
+            <p>{{ post.title }}</p>
+            <a href="{% url 'post-detail' post.pk %}" class="stretched-link"></a>
+            </div>
+
+            <div class="d-flex flex-row">
+                <form action="{% url 'like' post.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-up"><span>{{ post.likes.all.count }}</span></i>
+                    </button>
+                </form>
+                <form action="{% url 'dislike' post.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-down"><span>{{ post.dislikes.all.count }}</i>
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

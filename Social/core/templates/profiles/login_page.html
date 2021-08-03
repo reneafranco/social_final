@@ -1,0 +1,27 @@
+{% extends 'layouts/layout.html' %}
+
+{% block content %}
+{% block title %} Login {% endblock %}
+
+{{register_form.errors}}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 mt-5 col-sm-12">
+      <form class="login" method="POST" action="">
+        {% csrf_token %}
+
+        <label class="mb-1"for="username">Username</label>
+        <input class="display-block mt-2" type="text" name="username">
+        <br>
+        
+        <label class="mt-3"for="password">Password</label>
+        <input type="password" name="password">
+        
+        <div class="d-grid gap-2">
+          <input class="mt-3 btn btn-dark primaryAction" type="submit" value="login"/>
+        </div>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'layouts/layout.html' %}
+{% block title %} Karma {% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="row mt-5-">
+        <div class="col-md-3 col-sm-6 ">
+            <a href="{% url 'Home' %}" class="btn btn-light">Back to Feed</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="card shadow-sm col-md-8 col-sm-12 border-bottom px-5 pt-3">
+            {% if request.user.profile.picture %}
+            <img src="{{ profile.picture.url }}" class="rounded-circle" width="100" height="100" />
+            {% endif %}
+            <h3 class="py-2">
+                {% if profile.name %}
+                    <p>{{profile.name}}</p>
+                {% endif %}
+            </h3>
+            <h5 class="py-2">
+                {% if profile.location %}
+                    <p>{{profile.location}}</p>
+                {% endif %}
+            </h5>
+            <h5 class="py-2">
+                {% if profile.web %}
+                    <p>{{profile.web}}</p>
+                {% endif %}
+            </h5>
+
+            <h5 class="py-2">
+                <p>followers: {{number}}</p>
+                {% if profile.user == request.user %}
+                {% else %}
+                    {% if is_following %}
+                    <form action="{% url 'remove-follow' profile.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-danger" type="submit">Unfollow</button>
+                    </form>
+                    {% else %}
+                    <form action="{% url 'add-follow' profile.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-succses" type="submit">follow</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+           </h5>
+            
+            <div class="row mb-3">
+                <div class="col-md-5 col-sm-12">
+                    <a href="{% url 'edit-profile' request.user.profile.pk %}">
+                    <input class=" btn btn-dark mt-2 primaryAction" type="submit" value="Edit">
+                    </a>
+                </div>
+            </div>
+        </div>
+            
+    </div>
+    {% for x in posts %} 
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-5 col-sm-12 border-bottom position-relative">
+            <p><a style="text-decoration: none" class="text-primary" href="#">
+                @{{x.author}}</a> {{x.created_at}}</p>
+            <div class="position-relative">
+            <h5>{{ x.title }}</h5>
+            <p>{{ x.content }}</p>
+            <a href="{% url 'post-detail' x.pk %}" class="stretched-link"></a>
+            </div>
+            <div class="py-1 d-flex flex-row">
+                <form action="{% url 'like' x.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-up"><span>{{ x.likes.all.count }}</span></i>
+                    </button>
+                </form>
+                <form action="{% url 'dislike' x.pk%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button style="background-color: transparent; border:none; box-shadow: none" type="submit">
+                        <i class="far fa-thumbs-down"><span>{{ x.dislikes.all.count }}</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    
+</div>
+
+{% endblock %}

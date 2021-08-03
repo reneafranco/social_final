@@ -1,0 +1,22 @@
+{% extends 'layouts/layout.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Register {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="mb-3">
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="row justify-content-center mt-3">
+                    <div class="col-md-5 col-sm-12 border-bottom position-relative">
+                        {{register_form | crispy}}
+                        <input class=" btn btn-dark mt-2 primaryAction" type="submit" value="Register">  
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
